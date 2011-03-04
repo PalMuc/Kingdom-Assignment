@@ -1,0 +1,160 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'csv'
+
+require 'mysql'
+require 'sequel'
+require 'nokogiri'
+require 'bio'
+  
+# $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.dirname(__FILE__))
+
+require 'kingdom_db'
+require 'blast_string_parser'
+require 'ncbi_gi_lookup'
+
+if CSV.const_defined? :Reader
+  require 'fastercsv'
+  INSTALLED_CSV = FasterCSV
+else
+  INSTALLED_CSV = CSV
+end
+
+#parse command line arguments
+
+settings = {}
+unless ARGV.size == 7
+  puts "Usage: kingdom_assignment input_file.xml output_file.csv database_server database_user password database_name email_for_ncbi_lookup"
+  puts "Pass the parameter NOPASSWORD if you have not set a database password"
+  exit
+end
+
+settings[:input_file] = ARGV.shift
+settings[:output_file] = ARGV.shift
+
+settings[:database_server] = ARGV.shift
+settings[:database_user] = ARGV.shift
+settings[:database_password] = ARGV.shift
+settings[:database_name] = ARGV.shift
+
+settings[:email_address] = ARGV.shift
+
+settings[:database_password] = nil if settings[:database_password] == "NOPASSWORD"
+
+puts "Settings: " + settings.inspect
+
+#Initialize auxiliary classes
+
+blast_parser = BlastStringParser.new()
+gi_lookup = NCBIGiLookup.new(settings[:email_address])
+
+#Open input file
+
+unless File.exists?(settings[:input_file])
+  puts "The input file at " + File.expand_path(settings[:input_file]) + " could not be opened!"
+  exit
+end
+
+file = File.new(settings[:input_file])
+reader = Nokogiri::XML::Reader(file)
+
+#Initialize database
+db = KingdomDB.new(settings[:database_server], settings[:database_user], settings[:database_password], settings[:database_name])
+
+#Initialize output file
+
+if File.exists?(settings[:output_file])
+  puts "The output file at " + File.expand_path(settings[:output_file]) + " already exists!"
+  exit
+end
+output = INSTALLED_CSV.open(settings[:output_file], "w", {
+                              :col_sep => ";",
+                              :headers => ["query sequence id", "hit accession number", "sgi", "evalue", "species", "subject annotation", "subject score", "kingdom"],
+                              :write_headers => true})
+
+filter_array = [
+                "Bacteria",
+                "Archaea",
+                "Viridiplantae",
+                "Rhodophyta",
+                "Glaucocystophyceae",
+                "Alveolata",
+                "Cryptophyta",
+                "stramenopiles", #<- Change
+                "Amoebozoa",
+                "Apusozoa",
+                "Euglenozoa",
+                "Fornicata",
+                "Haptophyceae",
+                "Heterolobosea",
+                "Jakobida",
+                "Katablepharidophyta",
+                "Malawimonadidae",
+                "Nucleariidae",
+                "Oxymonadida",
+                "Parabasalia",
+                "Rhizaria",
+                "unclassified eukaryotes",
+                "Fungi",
+                "Metazoa",
+                "Choanoflagellida",
+                "Fungi/Metazoa incertae sedis",
+                "Viruses"
+               ]
+
+filter_hash = db.get_filter(filter_array)
+
+current_query = ""
+hit_id = ""
+hit_def = ""
+hit_accession = ""
+hsp_evalue = ""
+subject_score = ""
+kingdom = ""
+
+#Go through the XML with a pull-parser
+reader.each do |elem|
+
+  if elem.name == "Iteration_query-def"&& elem.node_type == Nokogiri::XML::Node::ELEMENT_NODE
+    #We are at the beginning of an iteration
+    current_query = elem.inner_xml
+
+  elsif elem.name == "Hit" && elem.node_type == Nokogiri::XML::Node::ELEMENT_NODE
+    #We are at the beginning of a Hit
+    #Load the node representing this hit into memory and extract required information
+    hit = Nokogiri::XML(elem.outer_xml)
+    hit_id = hit.xpath("//Hit_id").inner_text
+    hit_def = hit.xpath("//Hit_def").inner_text
+    hit_accession = hit.xpath("//Hit_accession").inner_text
+    hsp_evalue = hit.xpath("//Hsp[1]/Hsp_evalue").inner_text.to_f #Yep, the first element really has number 1
+    subject_score = hit.xpath("//Hsp[1]/Hsp_bit-score").inner_text.to_f #Set the subject score to be the bit-score of the first HSP
+    subject_gi = blast_parser.get_sgi_info(hit_id)
+
+    begin
+      species_name = blast_parser.get_species_name(hit_def)
+    rescue RuntimeError
+      puts "Can not find " + hit_def.to_s
+      print "Sending a RESTful query to NCBI webservers... "
+      species_name = gi_lookup.get_species_name(subject_gi)
+      print "done!\n"
+    end
+
+    begin
+      kingdom = db.match_filter(species_name, filter_hash)
+    rescue RuntimeError
+      kingdom = "NOT FOUND"
+    end
+    if kingdom.nil?
+      kingdom = "NONE"
+    end
+    
+    output << [blast_parser.get_query_seq(current_query), hit_accession, subject_gi, hsp_evalue, species_name, blast_parser.get_subject_annotation(hit_def), subject_score, kingdom]
+
+  end
+
+end
+
+output.close
+puts "Parsing finished!"
