@@ -6,11 +6,27 @@ Gem::Specification.new do |s|
   s.name        = "kingdom-assignment"
   s.version     = Kingdom::Assignment::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["TODO: Write your name"]
-  s.email       = ["TODO: Write your email address"]
+  s.authors     = ["Philipp Comans"]
+  s.email       = ["kingdom-assignment@volton.otherinbox.com"]
   s.homepage    = ""
-  s.summary     = %q{TODO: Write a gem summary}
-  s.description = %q{TODO: Write a gem description}
+  s.summary     = %q{Kingdom assignment summary}
+  s.description = %q{Kingdom assingment description}
+  
+  s.add_dependency "activesupport", "3.0.0"
+  if RUBY_PLATFORM =~ /java/
+	s.add_dependency "jdbc-mysql", ">= 5.1.13"
+  else
+  	s.add_dependency "mysql", ">= 2.8.1"
+  end
+
+  s.add_dependency "sequel", ">= 3.19.0"
+
+  if RUBY_VERSION < "1.9"
+	s.add_dependency "fastercsv", ">= 1.5.4"
+  end
+
+  s.add_dependency "nokogiri", ">= 1.4.4"
+  s.add_dependency "bio", ">= 1.4.1"
 
   s.rubyforge_project = "kingdom-assignment"
 
