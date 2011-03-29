@@ -1,19 +1,28 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'csv'
 
-require 'mysql'
+#parse command line arguments
+settings = {}
+unless ARGV.size == 7
+  puts "Usage: kingdom-assignment input_file.xml output_file.csv database_server database_user password database_name email_for_ncbi_lookup"
+  puts "Pass the parameter NOPASSWORD if you have not set a database password"
+  exit
+end
+
+#Use the correct database connector
+if RUBY_PLATFORM =~ /java/
+  puts "You are running JRuby, the jdbc/mysql database connector will be used."
+  require 'jdbc/mysql'
+else
+  require 'mysql'
+end
+
 require 'sequel'
 require 'nokogiri'
 require 'bio'
-  
-# $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require 'kingdom_db'
-require 'blast_string_parser'
-require 'ncbi_gi_lookup'
+require 'csv'
 
 if CSV.const_defined? :Reader
   require 'fastercsv'
@@ -21,15 +30,16 @@ if CSV.const_defined? :Reader
 else
   INSTALLED_CSV = CSV
 end
+  
+# $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.dirname(__FILE__))
 
-#parse command line arguments
+require 'kingdom_db'
+require 'blast_string_parser'
+require 'ncbi_gi_lookup'
+require 'kingdom-assignment/version'
 
-settings = {}
-unless ARGV.size == 7
-  puts "Usage: kingdom_assignment input_file.xml output_file.csv database_server database_user password database_name email_for_ncbi_lookup"
-  puts "Pass the parameter NOPASSWORD if you have not set a database password"
-  exit
-end
+puts "Running Kingdom Assignment " +  Kingdom::Assignment::VERSION.to_s
 
 settings[:input_file] = ARGV.shift
 settings[:output_file] = ARGV.shift
