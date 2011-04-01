@@ -11,7 +11,8 @@ In order to install this gem you need to have several programs
 installed:
 
  * Ruby either in version 1.8.7 or 1.9.2. The use of [JRuby](http://www.jruby.org/) (a Java implementation of Ruby) is recommended.
- Th the following, the installation procedure is given for **Mac OS X** and **Ubuntu Linux 10.10**. The commands for Ubuntu also have been tested to work for **Debian Squeeze** although you should substitute apt-get by aptitude.
+ 
+ In the following, the installation procedure is given for **Mac OS X** and **Ubuntu Linux 10.10**. The commands for Ubuntu also have been tested to work for **Debian Squeeze** although you should substitute apt-get by aptitude.
 
 ### Installing Git
 An installer for Mac OS X can be obtained from the [official website](http://git-scm.com/). For any Linux distribution it is recommended that you use your system's package manager to install Git. Look for a package called git or git-core. For Ubuntu 10.10 the command is:
