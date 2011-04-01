@@ -4,7 +4,7 @@ Description goes here.
 
 ## License
 This program is licensed under the GNU Lesser General Public License.
-See LICENSE for more information.
+See LICENSE.txt for more information.
 
 ## Prerequisites
 In order to install this gem you need to have several programs
