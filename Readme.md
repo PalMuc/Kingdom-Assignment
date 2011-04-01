@@ -243,7 +243,7 @@ Finally you can install the gem by typing:
 
     rvm jruby gem install pkg/kingdom-assignment-*.gem
     
-Kingdom Assignment is now in your global path, meaning that from any point in the system you call use it by typing
+Kingdom Assignment is now in your global path, meaning that from any point in the system you can use it by typing
 
     kingdom-assignment
     
@@ -253,4 +253,7 @@ on the command line. Please note that in order to do that you have to switch to 
 
     kingdom-assignment out_3.xml output_file.csv localhost root NOPASSWORD ncbi_taxonomy your_email_address_for_the_NCBI
 
-# copyright
+# Acknowledgements
+Creation of this program was funded by the [Molecular Geo- and Palaeobiology Lab](http://www.mol-palaeo.de/) of the Ludwig-Maximilians-Universität (LMU).
+
+The author's position was funded by the initiative for [equality in research and teaching](http://www.frauenbeauftragte.uni-muenchen.de/foerdermoegl/lmu1/tg73/index.html) of the Ludwig-Maximilians-Universität (LMU).
