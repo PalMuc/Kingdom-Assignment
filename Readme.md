@@ -227,6 +227,6 @@ on the command line. Please note that in order to do that you have to switch to 
 
 ## Using Kingdom Assignment
 
-    kingdom-assignment out_3.xml output_file.csv localhost root NOPASSWORD ncbi_taxonomy ncbi@volton.otherinbox.com
+    kingdom-assignment out_3.xml output_file.csv localhost root NOPASSWORD ncbi_taxonomy your_email_address_for_the_NCBI
 
 # copyright
