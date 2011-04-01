@@ -10,7 +10,8 @@ See License.txt for more information.
 In order to install this gem you need to have several programs
 installed:
 
- * Ruby either in version 1.8.7 or 1.9.2. The use of JRuby (a Java implementation of Ruby) is recommended.
+ * Ruby either in version 1.8.7 or 1.9.2. The use of [JRuby](http://www.jruby.org/) (a Java implementation of Ruby) is recommended.
+ Th the following, the installation procedure is given for **Mac OS X** and **Ubuntu Linux 10.10**. The commands for Ubuntu also have been tested to work for **Debian Squeeze** although you should substitute apt-get by aptitude.
 
 ### Installing Git
 An installer for Mac OS X can be obtained from the [official website](http://git-scm.com/). For any Linux distribution it is recommended that you use your system's package manager to install Git. Look for a package called git or git-core. For Ubuntu 10.10 the command is:
@@ -18,7 +19,7 @@ An installer for Mac OS X can be obtained from the [official website](http://git
     sudo apt-get install git
     
 ### Installing cURL
-Mac OS X comes with curl by default, on a Linux distribution, curl can be obtained via the system's package manager. For Ubuntu 10.10 the command is:
+Mac OS X comes with curl by default, on a Linux system, cURL can be obtained via the system's package manager. For Ubuntu 10.10 the command is:
 
     sudo apt-get install curl
     
@@ -71,7 +72,12 @@ Now save the file, close your editor and close your shell. Start a new shell and
     
     type rvm | head -1
     
-If you see something like "rvm is a function" the installation was successful. If you run into problems, read the [documentation](http://rvm.beginrescueend.com/rvm/install/). You can always delete RVM and start from scratch by typing:
+If you see something like "rvm is a function" the installation was
+successful. If you run into problems, read the
+[documentation](http://rvm.beginrescueend.com/rvm/install/).
+
+**The following command is not part of the installation procedure!**
+You can always delete RVM and start from scratch by typing:
 
     rvm implode
      
@@ -198,6 +204,16 @@ This should result in an output like this, giving you the NCBI taxonomy id of *H
     --schema     # optional: Pg only, load using given schema
 
 ## Installing Kingdom Assignment
+This gem is distributed in source form for the time being, so you must build it yourself in order to use it. Don't worry, it's not hard:
+
+First you must download the source code of this gem by going to a folder of your choice and typing:
+
+    git clone git://github.com/PalMuc/Kingdom-Assignment.git
+
+This will will clone a copy of this repository in a folder named Kingdom-Assignment. Go to this folder by typing:
+
+    cd Kingdom-Assignment
+
 Kingdom assignment is delivered as a Ruby gem. In order to build and install it, you first have to install another gem called bundler. Type:
 
     rvm jruby gem install bundler
