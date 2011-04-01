@@ -254,4 +254,4 @@ on the command line. Please note that in order to do that you have to switch to 
     kingdom-assignment out_3.xml output_file.csv localhost root NOPASSWORD ncbi_taxonomy your_email_address_for_the_NCBI
 
 # Acknowledgements
-Development of this program was supported by the [Molecular Geo- and Palaeobiology Lab](http://www.mol-palaeo.de/) of the Department of Earth and Environmental Sciences and the initiative for [Gleichstellung in Forschung und Lehre](http://www.frauenbeauftragte.uni-muenchen.de/foerdermoegl/lmu1/tg73/index.html) of the Ludwig-Maximilians-University Munich (LMU).
+Development of this program was supported by the [Molecular Geo- and Palaeobiology Lab](http://www.mol-palaeo.de/) of the Department of Earth and Environmental Sciences and the initiative "[Gleichstellung in Forschung und Lehre](http://www.frauenbeauftragte.uni-muenchen.de/foerdermoegl/lmu1/tg73/index.html)" of the Ludwig-Maximilians-University Munich (LMU).
