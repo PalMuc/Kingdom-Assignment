@@ -11,6 +11,9 @@ In order to install this gem you need to have several programs
 installed:
 
  * Ruby either in version 1.8.7 or 1.9.2. The use of [JRuby](http://www.jruby.org/) (a Java implementation of Ruby) is recommended.
+ * Git
+ * cURL
+ * MySQL
  
  In the following, the installation procedure is given for **Mac OS X** and **Ubuntu Linux 10.10**. The commands for Ubuntu also have been tested to work for **Debian Squeeze** although you should substitute apt-get by aptitude.
 
