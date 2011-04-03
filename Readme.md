@@ -1,10 +1,45 @@
-# Kingdom Assignment
-
-Description coming soon!
+# Kingdom-Assignment
 
 ## License
 This program is licensed under the GNU Lesser General Public License.
 See License.txt for more information.
+
+## Description
+Kingdom-Assignment takes BLAST+ alignments in XML format as input. For every BLAST hit, it will determine the species information of that hit, using either the hit definition string provided or using the [gi number](http://www.ncbi.nlm.nih.gov/Sitemap/sequenceIDs.html). In order to acquire taxonomy information from the gi number, a call to the NCBI webserver will be made.
+
+Every hit will be assigned a higher order group that hit belongs to. The set of higher order groups is defined by a filter. Right now, this filter can not be changed and contains the following taxa:
+
+> Bacteria, Archaea, Viridiplantae, Rhodophyta, Glaucocystophyceae, Alveolata, Cryptophyta, stramenopiles, Amoebozoa, Apusozoa, Euglenozoa, Fornicata, Haptophyceae, Heterolobosea, Jakobida, Katablepharidophyta, Malawimonadidae, Nucleariidae, Oxymonadida, Parabasalia, Rhizaria, unclassified eukaryotes, Fungi, Metazoa, Choanoflagellida, Fungi/Metazoa incertae sedis, Viruses
+
+A hit of the species *Escherichia coli* would for example be assigned to the domain bacteria.
+
+Output will be written to a CSV file in the following format:
+
+    Query sequence id; Hit accession number; sgi; Hit evalue; Hit species name; Hit subject annotation; Subject score; Higher order group
+
+An example output file could look like this:
+
+    AW3C1;ACR38454;238014838;3.34982954962278e-19;Zea mays;unknown;78.5665508561758;Viridiplantae
+    AW3C1;XP_002489117;253761439;1.33094019753946e-18;Sorghum bicolor;hypothetical protein SORBIDRAFT_0057s002150;76.6405529765891;Viridiplantae
+    AW3C1;XP_002488963;253760039;1.23820662046332e-15;Sorghum bicolor;hypothetical protein SORBIDRAFT_1150s002010;66.6253640027379;Viridiplantae
+    AW5C3;XP_001629010;156372369;1.85315736381546e-09;Nematostella vectensis;predicted protein;66.2401644268205;Metazoa
+
+As you see the first thee entries are the three best BLAST hits for the query sequence AW3C1. They all get assigned to the Phylum Viridiplantae. The second query sequence only has one hit from the species *Nematostella vectensis* which gets assigned to the Kingdom Metazoa.
+
+This information can be used to filter out contaminations in a genome library. The gem [Kingdom-Splitter](https://github.com/PalMuc/Kingdom-Splitter) can be used to split a data set into separate sets of contaminated and non-contaminated sequences.
+
+## Using Kingdom-Assignment
+The gem can be used in the following fashion:
+
+ 1. The output of the blast+ alignment in XML format.
+ 2. The name of the output table in CSV format
+ 3. The address of the MySQL database server
+ 4. The name of the database user
+ 5. The password of the database user
+ 6. The name of the NCBI taxonomy database, ncbi_taxonomy if you followed the section __Setting up the taxonomy database__
+ 7. Your email address, needed for NCBI server access. You don't have to register your email address with the NCBI first
+
+    kingdom-assignment out_3.xml output_file.csv localhost root NOPASSWORD ncbi_taxonomy your_email_address_for_the_NCBI
 
 ## Prerequisites
 In order to install this gem you need to have several programs
@@ -15,7 +50,7 @@ installed:
  * cURL
  * MySQL
  
- In the following, the installation procedure is given for **Mac OS X** and **Ubuntu Linux 10.10**. The commands for Ubuntu also have been tested to work for **Debian Squeeze** although you should substitute apt-get by aptitude.
+In the following, the installation procedure is given for **Mac OS X** and **Ubuntu Linux 10.10**. The commands for Ubuntu also have been tested to work for **Debian Squeeze** although you should substitute apt-get by aptitude.
 
 ### Installing Git
 An installer for Mac OS X can be obtained from the [official website](http://git-scm.com/). For any Linux distribution it is recommended that you use your system's package manager to install Git. Look for a package called git or git-core. For Ubuntu 10.10 the command is:
@@ -207,7 +242,7 @@ This should result in an output like this, giving you the NCBI taxonomy id of *H
     --directory  # optional: where to store/look for the data
     --schema     # optional: Pg only, load using given schema
 
-## Installing Kingdom Assignment
+## Installing Kingdom-Assignment
 This gem is distributed in source form for the time being, so you must build it yourself in order to use it. Don't worry, it's not hard:
 
 First you must download the source code of this gem by going to a folder of your choice and typing:
@@ -249,9 +284,5 @@ Kingdom Assignment is now in your global path, meaning that from any point in th
     
 on the command line. Please note that in order to do that you have to switch to JRuby as mentioned before.
 
-## Using Kingdom Assignment
-
-    kingdom-assignment out_3.xml output_file.csv localhost root NOPASSWORD ncbi_taxonomy your_email_address_for_the_NCBI
-
-# Acknowledgements
+## Acknowledgements
 Development of this program was supported by the [Molecular Geo- and Palaeobiology Lab](http://www.mol-palaeo.de/) of the Department of Earth and Environmental Sciences and the initiative "[Gleichstellung in Forschung und Lehre](http://www.frauenbeauftragte.uni-muenchen.de/foerdermoegl/lmu1/tg73/index.html)" of the Ludwig-Maximilians-University Munich (LMU).
