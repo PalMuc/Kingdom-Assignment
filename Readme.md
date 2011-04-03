@@ -39,7 +39,7 @@ The command line parameters are:
  2. The name of the output table in CSV format
  3. The address of the MySQL database server
  4. The name of the database user
- 5. The password of the database user
+ 5. The password of the database user, use NOPASSWORD if you have not set a database password.
  6. The name of the NCBI taxonomy database, ncbi\_taxonomy if you followed the section "Setting up the taxonomy database"
  7. Your email address, needed for NCBI server access. You don't have to register your email address with the NCBI first
 
