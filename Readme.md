@@ -31,15 +31,17 @@ This information can be used to filter out contaminations in a genome library. T
 ## Using Kingdom-Assignment
 The gem can be used in the following fashion:
 
- 1. The output of the blast+ alignment in XML format.
+    kingdom-assignment out_3.xml output_file.csv localhost root NOPASSWORD ncbi_taxonomy your_email_address_for_the_NCBI
+
+The command line parameters are:
+
+ 1. The output of the blast\+ alignment in XML format.
  2. The name of the output table in CSV format
  3. The address of the MySQL database server
  4. The name of the database user
  5. The password of the database user
- 6. The name of the NCBI taxonomy database, ncbi_taxonomy if you followed the section __Setting up the taxonomy database__
+ 6. The name of the NCBI taxonomy database, ncbi\_taxonomy if you followed the section "Setting up the taxonomy database"
  7. Your email address, needed for NCBI server access. You don't have to register your email address with the NCBI first
-
-    kingdom-assignment out_3.xml output_file.csv localhost root NOPASSWORD ncbi_taxonomy your_email_address_for_the_NCBI
 
 ## Prerequisites
 In order to install this gem you need to have several programs
