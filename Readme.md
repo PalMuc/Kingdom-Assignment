@@ -1,6 +1,6 @@
 # Kingdom Assignment
 
-Description goes here.
+Description coming soon!
 
 ## License
 This program is licensed under the GNU Lesser General Public License.
