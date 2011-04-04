@@ -5,17 +5,22 @@ This program is licensed under the GNU Lesser General Public License.
 See License.txt for more information.
 
 ## Description
-Kingdom-Assignment takes BLAST+ alignments in XML format as input. For every BLAST hit, it will determine the species information of that hit, using either the hit definition string provided or using the [gi number](http://www.ncbi.nlm.nih.gov/Sitemap/sequenceIDs.html). In order to acquire taxonomy information from the gi number, a call to the NCBI webserver will be made.
+Kingdom-Assignment is a tool to parse the NCBI BLASTplus XML format output and store attributes of BLASTplus in tabular form as a CSV file.
 
-Every hit will be assigned a higher order group that hit belongs to. The set of higher order groups is defined by a filter. Right now, this filter can not be changed and contains the following taxa:
+The output of Kingdom-Assignment provides the following information:
 
-> Bacteria, Archaea, Viridiplantae, Rhodophyta, Glaucocystophyceae, Alveolata, Cryptophyta, stramenopiles, Amoebozoa, Apusozoa, Euglenozoa, Fornicata, Haptophyceae, Heterolobosea, Jakobida, Katablepharidophyta, Malawimonadidae, Nucleariidae, Oxymonadida, Parabasalia, Rhizaria, unclassified eukaryotes, Fungi, Metazoa, Choanoflagellida, Fungi/Metazoa incertae sedis, Viruses
-
-A hit of the species *Escherichia coli* would for example be assigned to the domain bacteria.
-
-Output will be written to a CSV file in the following format:
-
-    Query sequence id; Hit accession number; sgi; Hit evalue; Hit species name; Hit subject annotation; Subject score; Higher order group
+<table border="1" cellpadding="5">
+  <tr>
+    <td>Query sequence id</td>
+    <td>Hit accession number</td>
+    <td>sgi</td>
+    <td>Hit evalue</td>
+    <td>Hit species name</td>
+    <td>Hit subject annotation</td>
+    <td>Subject score</td>
+    <td>Higher rank taxonomy</td>
+  </tr>
+</table>
 
 An example output file could look like this:
 
@@ -24,10 +29,32 @@ An example output file could look like this:
     AW3C1;XP_002488963;253760039;1.23820662046332e-15;Sorghum bicolor;hypothetical protein SORBIDRAFT_1150s002010;66.6253640027379;Viridiplantae
     AW5C3;XP_001629010;156372369;1.85315736381546e-09;Nematostella vectensis;predicted protein;66.2401644268205;Metazoa
 
-As you see the first thee entries are the three best BLAST hits for the query sequence AW3C1. They all get assigned to the Phylum Viridiplantae. The second query sequence only has one hit from the species *Nematostella vectensis* which gets assigned to the Kingdom Metazoa.
+As you see the first three entries are the three best BLAST hits for the query sequence AW3C1. They all get assigned to the Phylum Viridiplantae. The second query sequence only has one hit from the species *Nematostella vectensis* which gets assigned to the Kingdom Metazoa.
 
-This information can be used to filter out contaminations in a genome library. The gem [Kingdom-Splitter](https://github.com/PalMuc/Kingdom-Splitter) can be used to split a data set into separate sets of contaminated and non-contaminated sequences.
+The higher rank taxonomy is assigned based on species name acquired from the hit gi number and NCBI taxonomy information.  In order to acquire taxonomy information from the gi number, a call to the NCBI webserver will be made. Kingdom-Assignment uses the following list of the higher rank taxonomical groups:
 
+> Bacteria, Archaea, Viridiplantae, Rhodophyta, Glaucocystophyceae, Alveolata, Cryptophyta, stramenopiles, Amoebozoa, Apusozoa, Euglenozoa, Fornicata, Haptophyceae, Heterolobosea, Jakobida, Katablepharidophyta, Malawimonadidae, Nucleariidae, Oxymonadida, Parabasalia, Rhizaria, unclassified eukaryotes, Fungi, Metazoa, Choanoflagellida, Fungi/Metazoa incertae sedis, Viruses
+
+Kingdom-Assignment provides an annotation tool for large sets of query sequences that have been simultaneously compared against a NCBI database with any of the standard stand-alone or network-client BLAST+ programs.
+
+An example command for generating input for Kingdom-Assignment is:
+
+    blastx -query my.fasta -db BLASTDB/nr -evalue 0.0001 -max_target_seqs 3 -out my_blast5.xml -outfmt 5
+
+In a combination with the gem [Kingdom-Splitter](https://github.com/PalMuc/Kingdom-Splitter), Kingdom-Assignment can be used for detecting contaminations is Expressed Sequence Tag (EST) and genomic DNA libraries and preparing a contamination-free datasets (e.g. for phylogenetic analysis).
+    
+Kingdom-Assignment is written in Ruby 1.8.7 and is delivered as a Ruby gem. It has been tested with MRI 1.8.7 and 1.9.2 as well as with JRuby using the default 1.8.7 compatibility mode.
+
+It relies on the following Ruby gems to do its job:
+
+ * [BioRuby](http://bioruby.open-bio.org/)
+ * [Nokogiri](http://nokogiri.org/)
+ * [FasterCSV](http://fastercsv.rubyforge.org/) on Ruby < 1.9
+ * [Mysql](http://mysql-win.rubyforge.org) or [jdbc-mysql](http://jruby-extras.rubyforge.org/ActiveRecord-JDBC/)
+ * [Sequel](http://sequel.rubyforge.org/)
+ 
+If you follow the installation instructions below, these gems will automatically be installed for you.
+    
 ## Using Kingdom-Assignment
 The gem can be used in the following fashion:
 
@@ -35,7 +62,7 @@ The gem can be used in the following fashion:
 
 The command line parameters are:
 
- 1. The output of the blast\+ alignment in XML format.
+ 1. The output of the BLASTplus alignment in XML format.
  2. The name of the output table in CSV format
  3. The address of the MySQL database server
  4. The name of the database user
