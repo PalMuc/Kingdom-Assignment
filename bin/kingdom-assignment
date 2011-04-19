@@ -6,7 +6,15 @@ require 'rubygems'
 settings = {}
 unless ARGV.size == 7
   puts "Usage: kingdom-assignment input_file.xml output_file.csv database_server database_user password database_name email_for_ncbi_lookup"
-  puts "Pass the parameter NOPASSWORD if you have not set a database password"
+  puts "The command line parameters are:"
+  puts "1. The output of the BLASTplus alignment in XML format"
+  puts "2. The name of the output table in CSV format"
+  puts "3. The address of the MySQL database server"
+  puts "4. The name of the database user"
+  puts "5. The password of the database user, use NOPASSWORD if you have not set a database password."
+  puts "6. The name of the NCBI taxonomy database"
+  puts "7. Your email address, needed for NCBI server access. You don't have to register your email address with the NCBI first"
+  
   exit
 end
 
@@ -30,8 +38,8 @@ if CSV.const_defined? :Reader
 else
   INSTALLED_CSV = CSV
 end
-  
-# $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require 'kingdom_db'
