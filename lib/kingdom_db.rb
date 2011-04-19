@@ -11,10 +11,14 @@ class KingdomDB
     if !password.nil?
       connect_string = connect_string + '&password=' + password
     end
-    
-    if RUBY_ENGINE == 'jruby'
-      #This is JRuby, using jdbc
-      connect_string = 'jdbc:' + connect_string
+
+    if !defined?(RUBY_ENGINE)
+      #This is most likey 1.8.7
+    else
+      if RUBY_ENGINE == 'jruby'
+        #This is JRuby, using jdbc
+        connect_string = 'jdbc:' + connect_string
+      end
     end
     
     @database = Sequel.connect(connect_string)
