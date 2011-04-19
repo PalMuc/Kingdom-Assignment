@@ -11,6 +11,13 @@ class BlastStringParserTest < Test::Unit::TestCase
     bsp = BlastStringParser.new()
     assert_equal "Aqu1.200003", bsp.get_query_seq("Aqu1.200003")
     assert_equal "AW3C1", bsp.get_query_seq("AW3C1 [Astrosclera_willeyana]")
+    assert_equal "AW3C1_molpal", bsp.get_query_seq("AW3C1_molpal")
+    assert_equal "CC1c1_molpal", bsp.get_query_seq("CC1c1_molpal [Corticium_candelabrum]")
+    assert_equal "CC1c1_molpal", bsp.get_query_seq("CC1c1_molpal  [Corticium_candelabrum]")
+    assert_equal "CC1c1_molpal", bsp.get_query_seq("CC1c1_molpal \n[Corticium_candelabrum]")
+    assert_equal "CC1c1_molpal", bsp.get_query_seq("CC1c1_molpal [Corticium_candelabrum], this is a nice_sequence I found rummaging through my fridge [an older model from AEG]")
+    assert_equal "CC1c1", bsp.get_query_seq("CC1c1 (tastes really good with curry)")
+    assert_equal "CC1c1_molpal", bsp.get_query_seq("CC1c1_molpal [Corticium_candelabrum] (oh, hai!)")
     
   end
 end
