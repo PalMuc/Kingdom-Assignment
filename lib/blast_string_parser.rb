@@ -11,7 +11,8 @@ class BlastStringParser
   SPECIES_REGEXP2 = /\A.*\[(.*)\].*\z/ #captures everything in square brackets
 
   SGI_REGEXP = /\Agi\|(\d+)\|.*\z/
-  QUERY_SEQ_REGEXP = /\A([a-zA-Z0-9]+)[_|\s].*\z/
+  #QUERY_SEQ_REGEXP = /\A([a-zA-Z0-9]+)[_|\s].*\z/ #This captures everything up to the 1st underscore
+  QUERY_SEQ_REGEXP = /\A(\S+)\s.*\z/ #This captures everything until the first whitespace (more robust)
   #do not expect whitespace after the last | for robustness, strip later
   SUBJ_ANNOTATION_REGEXP = /(?:.*\|)*(.*)\[.*/ #TODO check if this REGEXP captures the right stuff
 
