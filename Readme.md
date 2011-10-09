@@ -221,7 +221,7 @@ You can apply the schema with:
 
     mysql -u root ncbi_taxonomy -p < biosql-1.0.1/sql/biosqldb-mysql5-5.sql
 
-Now you need to download the latest taxonomy dump from NCBI an use a schript provided by BioSQL to load it into the database:
+Now you need to download the latest taxonomy dump from NCBI an use a script provided by BioSQL to load it into the database:
 
     curl ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdump.tar.gz -o taxdump.tar.gz
     mkdir taxdata
