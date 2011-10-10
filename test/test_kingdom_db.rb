@@ -5,11 +5,11 @@ require 'kingdom_db'
 class KingdomDbTest < Test::Unit::TestCase
 
   def setup
-    @db = KingdomDB.new('localhost', 'root', '', 'ncbi_taxonomy')
+    @db = KingdomDB.new('localhost', 'root', '', 'taxa')
   end
 
   def test_id_from_taxon_name
-    assert_equal "7873", @db.id_from_name("Homo sapiens")
+    assert_not_nil(@db.id_from_name("Drosophila melanogaster"))
     assert_raise RuntimeError do
       @db.id_from_name("Sarah palin")
     end
@@ -22,8 +22,11 @@ class KingdomDbTest < Test::Unit::TestCase
 
   end
   def test_name_from_id
-    assert_equal "Homo sapiens", @db.name_from_id("7873")
-    assert_equal "Homo sapiens", @db.name_from_id(7873)
+
+    homo =  @db.id_from_name("Homo sapiens")
+    assert_equal "Homo sapiens", @db.name_from_id(homo)
+    assert_equal "Homo sapiens", @db.name_from_id(homo.to_s)
+    assert_equal "Homo sapiens", @db.name_from_id(homo.to_i)
 
     assert_raise RuntimeError do
       @db.name_from_id(0)
@@ -42,9 +45,11 @@ class KingdomDbTest < Test::Unit::TestCase
   def test_node_rank_from_id
     assert_equal "species", @db.node_rank_from_id("7873")
     assert_equal "species", @db.node_rank_from_id(7873)
+    assert_equal "species", @db.node_rank_from_id(@db.id_from_name("Drosophila melanogaster"))
 
     assert_equal "genus", @db.node_rank_from_id("7872")
-    assert_equal "no rank", @db.node_rank_from_id(15708)
+    assert_equal "no rank", @db.node_rank_from_id(1)
+    assert_equal "no rank", @db.node_rank_from_id(@db.id_from_name("Woodchuck hepatitis virus 1"))
 
   end
   def test_match_filter
@@ -67,7 +72,7 @@ class KingdomDbTest < Test::Unit::TestCase
       assert_equal nil, @db.match_filter("Hello world", filter_hash)
     end
     assert_equal "Bacteria", @db.match_filter("Bacteria", filter_hash)
-    assert_equal nil, @db.match_filter("all", filter_hash)
+    assert_equal nil, @db.match_filter("root", filter_hash)
     assert_equal nil, @db.match_filter("Zea mays", filter_hash)
     assert_equal nil, @db.match_filter("cellular organisms", filter_hash)
     
