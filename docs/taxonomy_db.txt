@@ -1,0 +1,155 @@
+This is a local copy of the website at
+http://bergelson.uchicago.edu/Members/mhorton/taxonomydb.build
+as of October 10, 2010
+
+It is replicated here for reference in case the original website get moved or is
+deleted.
+All copyright remains with Matthew Horton, the original author.
+
+---
+
+how to build the taxonomy db
+
+This document takes you through the steps necessary to create the taxonomy database. The instructions assume that you're using MySQL.
+
+Download MySQL
+The first thing to do is to download a current version of MySQL
+ 
+
+Build the local database and create the tables.
+Marta expects the database to be named taxa. Log in to mysql and type:
+
+create database taxa;
+use taxa;
+ 
+
+The taxa database contains three tables.
+
+giToTaxonId
+names
+nodes
+names and nodes are designed to hold the data described in the names.dmp and nodes.dmp tables described in: ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump_readme.txt
+ 
+
+The readme describes the schemas for each of the files. For consistency, I use ncbi's names when possible (but field names can't really contain spaces).
+
+<TODO> GET THE README FOR THE BIG FILE.
+
+To create giToTaxonId, log in to MySQL and type:
+
+create table giToTaxonId (
+gi INT UNSIGNED NOT NULL,
+taxonid INT UNSIGNED NOT NULL,
+
+PRIMARY KEY(gi)
+) engine=innodb charset=utf8;
+ 
+
+To create the names table, enter the following at the MySQL prompt:
+
+create table names (
+taxonid MEDIUMINT(11) UNSIGNED NOT NULL, 
+name VARCHAR(200) NOT NULL, 
+uniquename VARCHAR(100) DEFAULT NULL,
+class VARCHAR(50) NOT NULL DEFAULT '',
+
+KEY taxonid (taxonid), KEY type (class), KEY name (name)
+) ENGINE=INNODB CHARSET=UTF8;
+ 
+
+To create the nodes table, type:
+
+ CREATE TABLE nodes (
+  taxonid mediumint(8) unsigned NOT NULL,
+  parenttaxonid mediumint(8) unsigned NOT NULL,
+  rank varchar(50) default NULL,
+  embl_code varchar(20) default NULL,
+  division_id smallint(6) NOT NULL,
+  inherited_div_flag tinyint(1) unsigned NOT NULL,
+  genetic_code_id smallint(6) NOT NULL,
+  inherited_gc_flag tinyint(1) unsigned NOT NULL,
+  mitochondrial_genetic_codeid smallint(6) NOT NULL,
+  inherited_mgc_flag tinyint(1) unsigned NOT NULL,
+  genbank_hidden_flag tinyint(1) unsigned NOT NULL,
+  hidden_subtree_root_flag tinyint(1) unsigned NOT NULL,
+  comments varchar(255) default NULL,
+
+  PRIMARY KEY  (taxonid), KEY parenttaxonid (parenttaxonid)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+(if you prefer, configured the tinyint(1) fields as bit(1); if you do so, you will need to cast when you populate the database below).
+
+ 
+
+To confirm that your tables are as intended, review your schema with commands like:
+
+show tables;
+describe nodes;
+show create table names;
+Now we will load data into our new tables.
+
+ 
+
+Populate the Tables
+To build the database, we need to load the original data from NCBI.
+
+1. Download the files from NCBI:
+
+wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz
+wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/gi_taxid_nucl.dmp.gz
+extract the files with tar and gunzip.
+
+tar -xzf taxdump.tar.gz
+gunzip gi_taxid_nucl.dmp.gz;
+2. Optional: delete the current data in your database (only necessary when recreating the database):
+
+truncate giToTaxonId; 
+truncate names; 
+truncate nodes;
+
+
+3. to load the data into the database, login to your mysql instance and type:
+
+LOAD DATA INFILE '<path>/gi_taxid_nucl.dmp' INTO TABLE giToTaxonId FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' (gi,taxonid);
+LOAD DATA INFILE '<path>/names.dmp' INTO TABLE names FIELDS TERMINATED BY '\t|\t' LINES TERMINATED BY '\t|\n' (taxonid, name, uniquename, class);
+LOAD DATA INFILE '<path>/nodes.dmp' INTO TABLE nodes FIELDS TERMINATED BY '\t|\t' LINES TERMINATED BY '\t|\n' (taxonid, parenttaxonid,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_gc_flag, mitochondrial_genetic_codeid,inherited_mgc_flag,genBank_hidden_flag,hidden_subtree_root_flag,comments);
+where <path> is the directory pointing to the files that you downloaded from NCBI.
+
+NOTE: Review the 'local' keyword if you are loading data onto a server that you are not currently logged into (e.g. if you used the -h argument when logging into MySQL).
+
+(be patient, these files are large).
+
+You should have a working installation now. To confirm, review your data with basic commands like:
+
+select count(*) from nodes;
+select * from names limit 5;
+select count(*) from giToTaxonId;
+ 
+
+and use your joins to traverse one taxonomic set or another.
+
+Next we need to tell MARTA where the taxonomy database is located.
+
+ 
+
+connect marta to the taxa database
+You will need to edit the marta.properties file in the base directory of your installation of MARTA to connect to the database.
+
+The four keys for the db are:
+
+dburl - the URL path that MARTA  will use to locate the database taxa.
+dbdriver - the class name of the jdbc Driver that you are using to connect to the database.
+dbuserid - the username that you use to login to the database.
+dbpassword - the password that you use to login to the database.
+ 
+
+For example, if I built my database on a server named 'chewbacca', I might edit my property file to look like:
+
+dburl=jdbc:mysql://chewbacca/taxa
+dbdriver=com.mysql.jdbc.Driver
+dbuserid=matt
+dbpassword=w0ok!E7
+
+trimpathovarassignment=false
+spuhsvote=true
+
+The 'trimpathovarassignment' argument determine whether any pv. assignments should be omitted; "spuhsvote" determines whether your spuhs actually influence the species level assignments... if you were to get back a result-set in which two hits, with the same bitscore value differed at the species epithet (e.g. one for "Pseudomonas viridiflava", one for "Pseudomonas sp."), a 2/3 consensus requirement would require the software to iterate to the genus level if "spuhsvote" were set to true. To allow "viridiflava" to carry the day, here one would set "spuhsvote" to false.
