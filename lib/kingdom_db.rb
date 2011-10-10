@@ -3,6 +3,7 @@ require 'sequel'
 class KingdomDB
 
   ROOT_ID = "1"
+  SCIENTIFIC_NAME = "scientific name"
 
   def initialize(server, user, password, database)
     
@@ -28,19 +29,19 @@ class KingdomDB
   def id_from_name(taxon_name)
     #TODO should this only capture scientific names?
 
-    db_results = @database[:taxon_name].filter(:name => taxon_name).map(:taxon_id)
+    db_results = @database[:names].filter(:name => taxon_name, :class => SCIENTIFIC_NAME).map(:taxonid)
     
     if db_results.size == 0
       raise("No results for taxon name " + taxon_name.to_s)
     elsif db_results.size > 1
-      raise("Results not unique: " + db_results.inspect)
+      raise("Results not unique for taxon name " + taxon_name.to_s + ": " + db_results.inspect)
     else
       return db_results[0].to_s
     end
   end
 
   def name_from_id(taxon_id)
-    db_results = @database[:taxon_name].filter(:taxon_id => taxon_id.to_s, :name_class => "scientific name").map(:name)
+    db_results = @database[:names].filter(:taxonid => taxon_id.to_s, :class => SCIENTIFIC_NAME).map(:name)
 
     if db_results.size == 0
       raise("No results for taxon id " + taxon_id.to_s)
@@ -52,7 +53,7 @@ class KingdomDB
   end
 
   def parent_id_from_id(taxon_id)
-    db_results = @database[:taxon].filter(:taxon_id => taxon_id.to_s).map(:parent_taxon_id)
+    db_results = @database[:nodes].filter(:taxonid => taxon_id.to_s).map(:parenttaxonid)
 
     if db_results.size == 0
       raise("No results for taxon id " + taxon_id.to_s)
@@ -65,7 +66,7 @@ class KingdomDB
   end
 
   def node_rank_from_id(taxon_id)
-    db_results = @database[:taxon].filter(:taxon_id => taxon_id.to_s).map(:node_rank)
+    db_results = @database[:nodes].filter(:taxonid => taxon_id.to_s).map(:rank)
 
 
     if db_results.size == 0
