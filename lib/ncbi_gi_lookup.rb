@@ -1,6 +1,10 @@
 require 'bio'
 require 'nokogiri'
 
+#TODO Port this to using the MySQL db
+#TODO Get rid of the cache, MySQL already does caching
+
+
 class NCBIGiLookup
   def initialize(email)
     unless email.is_a?(String)
