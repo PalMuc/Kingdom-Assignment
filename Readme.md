@@ -10,5 +10,5 @@ information:
 - [Kingdom-Extraction](https://github.com/PalMuc/Kingdom-Assignment/blob/master/Kingdom-Extraction-Readme.md)
  
  Right now, this project should compile just fine. However, if you
- want y more thoroughly tested version, you should check out the ["old"
- branch](https://github.com/PalMuc/Kingdom-Assignment/branches/old) of this project
+ want a more thoroughly tested version, you should check out the ["old"
+ branch](https://github.com/PalMuc/Kingdom-Assignment/tree/old) of this project
