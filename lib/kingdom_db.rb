@@ -27,8 +27,6 @@ class KingdomDB
   end
   
   def id_from_name(taxon_name)
-    #TODO should this only capture scientific names?
-
     db_results = @database[:names].filter(:name => taxon_name, :class => SCIENTIFIC_NAME).map(:taxonid)
     
     if db_results.size == 0
@@ -79,6 +77,12 @@ class KingdomDB
     
   end
 
+  def gi_from_taxonid(taxon_id)
+  end
+
+  def taxonid_form_gi(gi_number)
+  end
+  
   def get_filter(name_array)
     filter_hash = Hash[name_array.collect { |taxon_name|
                          [taxon_name, id_from_name(taxon_name)]
