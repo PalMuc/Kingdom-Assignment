@@ -118,7 +118,7 @@ filter_array = [
                 "Fungi",
                 "Metazoa",
                 "Choanoflagellida",
-                "Fungi/Metazoa incertae sedis",
+                "Opisthokonta incertae sedis", #"Fungi/Metazoa incertae sedis"
                 "Viruses"
                ]
 
