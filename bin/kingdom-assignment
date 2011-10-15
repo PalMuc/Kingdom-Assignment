@@ -140,18 +140,17 @@ reader.each do |elem|
     subject_score = hit.xpath("//Hsp[1]/Hsp_bit-score").inner_text.to_f #Set the subject score to be the bit-score of the first HSP
     subject_gi = blast_parser.get_sgi_info(hit_id)
 
+    species_name = nil
+
     begin
       species_name = blast_parser.get_species_name(hit_def)
     rescue RuntimeError
-      puts "Can not find " + hit_def.to_s[0..20] + "[...]"
-      puts "Querying database for " + subject_gi.to_s +  "..."
+      puts "Can not find " + hit_def.to_s[0..20] + "..."
       begin
-        species_name = db.id_from_gi(subject_gi)
+        species_name = db.name_from_gi(subject_gi)      
       rescue RuntimeError
-        puts "Can not find gi " + subject_gi.to_s
-        species_name = nil
+        puts "ERROR: Could not find gi " + subject_gi.to_s
       end
-      
     end
 
     begin
@@ -162,7 +161,7 @@ reader.each do |elem|
     if kingdom.nil?
       kingdom = "NONE"
     end
-    
+
     output << [blast_parser.get_query_seq(current_query), hit_accession, subject_gi, hsp_evalue, species_name, blast_parser.get_subject_annotation(hit_def), subject_score, kingdom]
 
   end
