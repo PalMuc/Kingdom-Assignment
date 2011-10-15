@@ -18,6 +18,10 @@ unless opts[:input_file_given] && opts[:output_file_given]
   abort
 end
 
+unless opts[:database_password_given]
+  opts[:database_password] = nil
+end
+
 #Use the correct database connector
 if RUBY_PLATFORM =~ /java/
   puts "You are running JRuby, the jdbc/mysql database connector will be used."
@@ -139,10 +143,15 @@ reader.each do |elem|
     begin
       species_name = blast_parser.get_species_name(hit_def)
     rescue RuntimeError
-      puts "Can not find " + hit_def.to_s[0..20] + "..."
-      print "Querying database for " + subject_gi.to_s +  "... "
-      species_name = db.id_from_gi(subject_gi)
-      print "done!\n"
+      puts "Can not find " + hit_def.to_s[0..20] + "[...]"
+      puts "Querying database for " + subject_gi.to_s +  "..."
+      begin
+        species_name = db.id_from_gi(subject_gi)
+      rescue RuntimeError
+        puts "Can not find gi " + subject_gi.to_s
+        species_name = nil
+      end
+      
     end
 
     begin
