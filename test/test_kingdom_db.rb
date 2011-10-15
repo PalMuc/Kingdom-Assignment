@@ -52,6 +52,12 @@ class KingdomDbTest < Test::Unit::TestCase
     assert_equal "no rank", @db.node_rank_from_id(@db.id_from_name("Woodchuck hepatitis virus 1"))
 
   end
+
+  def test_name_from_gi
+    assert_equal "Oryctolagus cuniculus", @db.name_from_gi(1712)
+    assert_equal "Tribolium castaneum", @db.name_from_gi("270016927")
+  end
+    
   def test_match_filter
     filter_array = [
                     "Bacteria",
@@ -91,8 +97,6 @@ class KingdomDbTest < Test::Unit::TestCase
     assert_equal nil, @db.match_filter("uncultured organism", filter_hash)
     assert_equal "Metazoa", @db.match_filter("Xenopus (Silurana) tropicalis", filter_hash)
     assert_equal "Viruses", @db.match_filter("Pseudomonas phage EL", filter_hash)
-    
-
     
   end
 end

@@ -77,10 +77,21 @@ class KingdomDB
     
   end
 
-  def gi_from_taxonid(taxon_id)
+  def id_from_gi(gi_number)
+    db_results = @database[:proteingiToTaxonId].filter(:gi => gi_number).map(:taxonid)
+    
+    if db_results.size == 0
+      raise("No results for gi " + gi_number.to_s)
+    elsif db_results.size > 1
+      raise("Results not unique: " + db_results.inspect)
+    else
+      return db_results[0].to_s
+    end
   end
 
-  def taxonid_form_gi(gi_number)
+  def name_from_gi(gi_number)
+    taxonid = id_from_gi(gi_number)
+    name_from_id(taxonid)
   end
   
   def get_filter(name_array)
