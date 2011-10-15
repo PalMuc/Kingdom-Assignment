@@ -1,21 +1,21 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
+require 'trollop'
 
 #parse command line arguments
-settings = {}
-unless ARGV.size == 7
-  puts "Usage: kingdom-assignment input_file.xml output_file.csv database_server database_user password database_name email_for_ncbi_lookup"
-  puts "The command line parameters are:"
-  puts "1. The output of the BLASTplus alignment in XML format"
-  puts "2. The name of the output table in CSV format"
-  puts "3. The address of the MySQL database server"
-  puts "4. The name of the database user"
-  puts "5. The password of the database user, use NOPASSWORD if you have not set a database password."
-  puts "6. The name of the NCBI taxonomy database"
-  puts "7. Your email address, needed for NCBI server access. You don't have to register your email address with the NCBI first"
-  
-  exit
+opts = Trollop::options do
+  opt :input_file, "The output of the BLASTplus alignment in XML format", :type => String
+  opt :output_file, "The name of the output table in CSV format", :type => String
+  opt :database_server, "Optional: The address of the MySQL database server", :type => String, :default => "localhost"
+  opt :database_user, "Optional: The name of the database user", :type => String, :default => "root", :short => "-u"
+  opt :database_password, "Optional: The password of the database user", :type => String, :default => "no password", :short => "-p"
+  opt :database_name, "Optional: The name of the NCBI taxonomy database", :type => String, :default => "taxa", :short => "-n"
+end
+
+unless opts[:input_file_given] && opts[:output_file_given]
+  puts "Invalid arguments, see --help for more information."
+  abort
 end
 
 #Use the correct database connector
@@ -44,50 +44,36 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 require 'kingdom_db'
 require 'blast_string_parser'
-require 'ncbi_gi_lookup'
 require 'kingdom-assignment/version'
 
 puts "Running Kingdom Assignment " +  Kingdom::Assignment::VERSION.to_s
 
-settings[:input_file] = ARGV.shift
-settings[:output_file] = ARGV.shift
-
-settings[:database_server] = ARGV.shift
-settings[:database_user] = ARGV.shift
-settings[:database_password] = ARGV.shift
-settings[:database_name] = ARGV.shift
-
-settings[:email_address] = ARGV.shift
-
-settings[:database_password] = nil if settings[:database_password] == "NOPASSWORD"
-
-puts "Settings: " + settings.inspect
+puts "Settings: " + opts.inspect
 
 #Initialize auxiliary classes
 
 blast_parser = BlastStringParser.new()
-gi_lookup = NCBIGiLookup.new(settings[:email_address])
 
 #Open input file
 
-unless File.exists?(settings[:input_file])
-  puts "The input file at " + File.expand_path(settings[:input_file]) + " could not be opened!"
+unless File.exists?(opts[:input_file])
+  puts "The input file at " + File.expand_path(opts[:input_file]) + " could not be opened!"
   exit
 end
 
-file = File.new(settings[:input_file])
+file = File.new(opts[:input_file])
 reader = Nokogiri::XML::Reader(file)
 
 #Initialize database
-db = KingdomDB.new(settings[:database_server], settings[:database_user], settings[:database_password], settings[:database_name])
+db = KingdomDB.new(opts[:database_server], opts[:database_user], opts[:database_password], opts[:database_name])
 
 #Initialize output file
 
-if File.exists?(settings[:output_file])
-  puts "The output file at " + File.expand_path(settings[:output_file]) + " already exists!"
+if File.exists?(opts[:output_file])
+  puts "The output file at " + File.expand_path(opts[:output_file]) + " already exists!"
   exit
 end
-output = INSTALLED_CSV.open(settings[:output_file], "w", {
+output = INSTALLED_CSV.open(opts[:output_file], "w", {
                               :col_sep => ";",
                               :headers => ["query sequence id", "hit accession number", "sgi", "evalue", "species", "subject annotation", "subject score", "kingdom"],
                               :write_headers => true})
