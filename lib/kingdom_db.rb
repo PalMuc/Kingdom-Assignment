@@ -28,15 +28,22 @@ class KingdomDB
   end
   
   def id_from_name(taxon_name)
-    db_results = @database[:names].filter(:name => taxon_name, :class => SCIENTIFIC_NAME).map(:taxonid)
-    
+    db_results = @database[:names].select(:taxonid, :class).filter(:name => taxon_name).all
+
+    if db_results.size > 1
+      #If we get more than one result, check if we got a scientific name
+      db_results.delete_if{|x| x[:class] != SCIENTIFIC_NAME}
+    end
+
+    if db_results.size > 1
+      raise("Results not unique: " + db_results.inspect)
+    end
+            
     if db_results.size == 0
       raise("No results for taxon name " + taxon_name.to_s)
-    elsif db_results.size > 1
-      raise("Results not unique for taxon name " + taxon_name.to_s + ": " + db_results.inspect)
-    else
-      return db_results[0].to_s
     end
+
+    return db_results[0][:taxonid].to_s
   end
 
   def name_from_id(taxon_id)
@@ -103,7 +110,7 @@ class KingdomDB
   end
 
   def match_filter(taxon_name, filter_hash)
-    
+
     current_species_id = id_from_name(taxon_name)
 
     history = []

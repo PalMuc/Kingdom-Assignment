@@ -56,6 +56,10 @@ class KingdomDbTest < Test::Unit::TestCase
   def test_name_from_gi
     assert_equal "Oryctolagus cuniculus", @db.name_from_gi(1712)
     assert_equal "Tribolium castaneum", @db.name_from_gi("270016927")
+    assert_equal "Clypeaster japonicus", @db.name_from_gi(124106306)
+    assert_equal "Anthocidaris crassispina", @db.name_from_gi(124106325)
+
+    assert_equal "Lateolabrax japonicus", @db.name_from_gi(158518390)
     assert_raise RuntimeError do
       @db.name_from_gi(205688854)
     end
@@ -102,6 +106,9 @@ class KingdomDbTest < Test::Unit::TestCase
     assert_equal "Metazoa", @db.match_filter("Xenopus (Silurana) tropicalis", filter_hash)
     assert_equal "Viruses", @db.match_filter("Pseudomonas phage EL", filter_hash)
     assert_equal "Viruses", @db.match_filter("Pseudomonas phage EL", filter_hash)
+
+    assert_equal "Metazoa", @db.match_filter("Canis lupus familiaris", filter_hash)
+    assert_equal "Metazoa", @db.match_filter("Canis familiaris", filter_hash)
 
     assert_raise RuntimeError do
       @db.match_filter(nil, filter_hash)
