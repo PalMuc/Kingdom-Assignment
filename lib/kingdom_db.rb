@@ -23,6 +23,7 @@ class KingdomDB
     end
     
     @database = Sequel.connect(connect_string)
+    @filter_hit_cache = {}
     
   end
   
@@ -104,10 +105,25 @@ class KingdomDB
   def match_filter(taxon_name, filter_hash)
     
     current_species_id = id_from_name(taxon_name)
+
+    history = []
     
     while ((current_species_id.to_i > ROOT_ID.to_i)&&(!filter_hash.has_value?(current_species_id)))
-      current_species_id = parent_id_from_id(current_species_id)
+      if @filter_hit_cache.has_key? current_species_id
+        #Cache hit
+        current_species_id = @filter_hit_cache[current_species_id]
+        break
+      else
+        parent_id = parent_id_from_id(current_species_id)
+        history << current_species_id
+        current_species_id = parent_id
+      end
     end
+    
+    history.each { |i|
+      @filter_hit_cache[i] = current_species_id
+    }
+    
     if current_species_id == ROOT_ID
       return nil
     else
