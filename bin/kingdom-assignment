@@ -154,8 +154,8 @@ reader.each do |elem|
       species_name = blast_parser.get_species_name(hit_def)
     rescue RuntimeError
       puts "Can not find " + hit_def.to_s[0..20] + "..."
-      print "Querying NCBI webservers for " + subject_gi.to_s +  "... "
-      species_name = gi_lookup.get_species_name(subject_gi)
+      print "Querying database for " + subject_gi.to_s +  "... "
+      species_name = db.id_from_gi(subject_gi)
       print "done!\n"
     end
 
