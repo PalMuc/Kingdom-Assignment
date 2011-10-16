@@ -18,12 +18,13 @@ Gem::Specification.new do |s|
   	s.add_dependency "mysql", "~> 2.8.1"
   end
 
-  s.add_dependency "sequel", "~> 3.19.0"
+  s.add_dependency "sequel", "~> 3.28.0"
 
   s.add_dependency "fastercsv", "~> 1.5.4" #only used on Ruby < 1.9
 
-  s.add_dependency "nokogiri", "~> 1.4.4"
-  s.add_dependency "bio", "~> 1.4.1"
+  s.add_dependency "nokogiri", "~> 1.5.0"
+  s.add_dependency "bio", "~> 1.4.2"
+  s.add_dependency "trollop", "~> 1.16.2"
 
   s.rubyforge_project = "kingdom-assignment"
 
